@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { createTheme } from "@mui/material/styles";
+
 
 
 //  in app
@@ -13,12 +13,12 @@ const theme = createTheme({
         root: {
           // Standard
           "& .MuiInput-root": {
-            color: "#646cff",
+            color: "hsla(185, 6%, 65%, 1)",
             fontFamily: "inherit",
 
             // label (is not working)
             "& .MuiInputLabel-standard": {
-              color: "rgb(216, 41, 10)",
+              color: "hsla(185, 6%, 65%, 1)",
               fontWeight: "800",
               "&.Mui-focused": {
                 color: "rgb(216, 41, 10)",

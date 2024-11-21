@@ -1,8 +1,8 @@
 .addFlat_container{
     width: auto;
-    height: 30%;
+    height: auto;
  
-    background: transparent;
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
  
     border: 2px solid  var(--cadet-gray);
     border-radius: 10px;

@@ -5,9 +5,13 @@ import Login from "../Pages/Login/Login"
 import Register from '../Pages/Register/Register';
 import Homepage from '../Pages/Homepage/Homepage';
 import MyProfile from '../Pages/MyProfile/MyProfile';
-import Favorites from '../Pages/Favourites/Favourites';
+import Favourites from '../Pages/Favourites/Favourites';
 import MyFlats from "../Pages/MyFlats/MyFlats";
 import Auth from "../authentication/Auth";
+import AdminRoute from "./AdminRoute";
+import AllUsers from "../Pages/AllUsers/AllUsers";
+import Inbox from "../Pages/Inbox/Inbox";
+
 
 
 
@@ -41,6 +45,7 @@ const routesArray = [
 			{
 				path: "homepage",
 				element: <Homepage />,
+		
 			},
 			{
 				path: "myflats",
@@ -51,8 +56,24 @@ const routesArray = [
 				element: <MyProfile />,
 			},
 			{
-				path: "favorites",
-				element: <Favorites />,
+				path: "favourites",
+				element: <Favourites />,
+			},
+			{
+				path: "inbox",
+				element: <Inbox />,
+			},
+
+			{
+				path: "all-users",
+				element: <AdminRoute />,
+				children:[
+					{
+						path: "",
+						element: <AllUsers />,
+					},
+				]
+
 			},
 		],
 	},

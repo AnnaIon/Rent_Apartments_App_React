@@ -4,6 +4,8 @@ import { useNavigate,useLocation } from "react-router-dom";
 
 import LoginIcon from "@mui/icons-material/Login";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import { yellow } from '@mui/material/colors';
+import { lime  } from '@mui/material/colors';
 
 
 const Routes = [
@@ -29,7 +31,7 @@ const Navigation = () => {
         navigate(`${Routes[newValue].path}`);
     };
   return (
-    <Box className="autentication__navigation__container">
+    <Box className="autentication__navigation__container" sx={{ backgroundColor: yellow[200] ,  color: lime[900] }}>
     <BottomNavigation showLabels value={value} onChange={handleChange}>
         {Routes.map((route) => (
             <BottomNavigationAction

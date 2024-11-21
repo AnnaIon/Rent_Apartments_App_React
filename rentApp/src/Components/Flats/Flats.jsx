@@ -1,66 +1,99 @@
 import { useEffect, useState } from "react";
-import {onAuthStateChanged} from 'firebase/auth';
-import {auth, db} from '../../../firebase';
-import {doc, getDoc} from 'firebase/firestore';
+import {
+  deleteFlat,
+  fetchFlatsData,
+  getFavouriteFlats,
+} from "../../../firebase";
+import Grid2 from "@mui/material/Grid2";
+import { useOutletContext } from "react-router-dom";
+import Flat from "../Flat/Flat";
+import { Box } from "@mui/material";
+import { applyFilter } from "../../Utils/InputsValidations";
 
+const Flats = ({ isHomepage,filter,flats,setFlats,isMyFlatsPage }) => {
 
+  
+  const [favouriteFlats, setFavouriteFlats] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { currentUser } = useOutletContext();
 
+  useEffect(() => {
+    fetchFlatsData(currentUser, isHomepage).then((res) => {
+      console.log(res);
+      if (res) {
+        setFlats({filteredFlats : res,originalFlats: res });
+      }
+    });
+    getFavouriteFlats(currentUser).then((res) => {
+      if (res) {
+        setFavouriteFlats(res);
+      }
+    });
+  }, []);
 
-const Flats = () => {
+  useEffect(() =>{
+    const newFlats = applyFilter(filter,flats.originalFlats);
+    setFlats({...flats,['filteredFlats'] : newFlats})
+  },[filter])
 
-    const [flats, setFlats] = useState([]);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            const fetchFlatsData = async () => {
-                if(user){
-                    const flatsColection = doc(db, 'users', user.uid);
-                    const flatDoc = await getDoc(flatsColection);
-                    if(flatDoc.exists()){
-                        const finalFlatData = flatDoc.data();
-                        const flatArr = finalFlatData.flats;
-                        setFlats(flatArr);
-                    }
-                }
-            }
-            fetchFlatsData();
-        })
-
-        return () => unsubscribe();
-    }, [])
-
-    return (
-        <div>
-            <h2>My flats</h2>
-
-            {flats.length === 0 ? (
-                <p>No flats available.</p>
-            ): (
-                <table border = "1">
-                    <thead>
-                        <tr>
-                            <td>City</td>
-                            <td>Street Name</td>
-                            <td>Street Number</td>
-                            <td colSpan={3}>Actions</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {flats.map(flat => (
-                            <tr key={flat.id}>
-                                <td>{flat.city}</td>
-                                <td>{flat.streetName}</td>
-                                <td>{flat.streetNumber}</td>
-                                <td><button>See details here</button></td>
-                                <td><button>Edit flat</button></td>
-                                <td><button>Delete flat</button></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    )
+  function checkIsFavourite(flatId) {
+    return favouriteFlats.some((flat) => flat.id === flatId);
   }
 
-export default Flats
+  const handleDeleteFlat = (userId,flatId) => {
+    deleteFlat(userId, flatId).then((res) => setFlats({...flats,[userId] : res}))
+  .then(res => {
+    window.location.reload()
+  });
+
+  };
+
+  return (
+    <>
+      {Object.keys(flats.filteredFlats).length > 0 ? (
+        <Box sx={{ mt:'1rem' }}>
+          <Grid2
+            container
+            spacing={15}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            {Object.keys(flats.filteredFlats).map((user) =>
+              flats.filteredFlats[user].map((flat) => (
+                <Grid2
+                  key={flat.id}
+                  height={160}
+                  width={160}
+                  alignContent='center'
+                  textAlign='center'
+                >
+                  <Flat
+                    city={flat.city}
+                    streetName={flat.streetName}
+                    streetNumber={flat.streetNumber}
+                    areaSize={flat.areaSize}
+                    hasAC={flat.hasAC}
+                    rentPrice={flat.rentPrice}
+                    title={flat.title}
+                    yearBuild={flat.yearBuild}
+                    flatId={flat.id}
+                    handleDeleteFlat={() => handleDeleteFlat(user,flat.id)}
+                    favourite={checkIsFavourite(flat.id)}
+                    isHomepage={isHomepage}
+                    isMyFlatsPage ={isMyFlatsPage}
+                    isCurrentOwner={user === currentUser.uid}
+                    flat={flat}
+                  />
+                </Grid2>
+              ))
+            )}
+          </Grid2>
+        </Box>
+      ) : (
+        ''
+      )}
+    </>
+  );
+};
+export default Flats;

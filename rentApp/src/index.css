@@ -4,10 +4,32 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
   font-weight: 400;
-
+  
+  background:
+  linear-gradient(
+    rgba(0, 0, 0, 0.2) 20%,
+    rgba(0, 0, 0, 0.0) 30%,
+    rgba(0, 0, 0, 0.2) 80%,
+    rgba(0, 0, 0, 0.7) 90%,
+    rgba(0, 0, 0, 0.9) 95%,
+    rgba(0, 0, 0, 1.0) 100%
+  
+) ;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-image: url(./assets/linedphoto-cGcHSGzSDoM-unsplash.jpg);
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.8) 20%,
+      rgba(0, 0, 0, 0.3) 30%,
+      rgba(0, 0, 0, 0.4) 80%,
+      rgba(0, 0, 0, 0.7) 90%,
+      rgba(0, 0, 0, 0.9) 95%,
+      rgba(0, 0, 0, 1.0) 100%
+    
+  ),
+   
+  url(./assets/linedphoto-cGcHSGzSDoM-unsplash.jpg); 
+
   background-repeat: no-repeat;
   background-size: 100% 100%;
 
@@ -74,3 +96,24 @@ body > div#root {
 	border-top: 0.5px solid black;
 	margin-top: auto;
 }
+
+.card{
+  width: fit-content;
+  height: fit-content;
+  border : 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: skyblue;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.card-back{
+  background-color: teal;
+}
+
+.card-back-icons{
+  display: fl;
+}
+

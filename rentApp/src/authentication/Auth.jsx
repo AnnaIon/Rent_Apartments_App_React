@@ -2,6 +2,9 @@ import { Outlet, useOutletContext,Navigate } from "react-router-dom";
 import AuthNavigation from "../authentication/Navigation";
 import { Container, Box } from "@mui/material";
 import { useEffect } from "react";
+import { yellow } from '@mui/material/colors';
+import { lime  } from '@mui/material/colors';
+
 
 const Auth = () => {
   const { currentUser } = useOutletContext();
@@ -12,7 +15,7 @@ const Auth = () => {
   return (
     <>
       {currentUser ? (
-        <Navigate to="/homepage"></Navigate>
+        <Navigate to='/homepage'></Navigate>
       ) : (
         <Container
           disableGutters
@@ -20,10 +23,11 @@ const Auth = () => {
           sx={{
             height: "100%",
             flexDirection: "column",
+
           }}
           classes={{ root: "displayFlexCentered" }}
         >
-          <Box className="autentication__container">
+          <Box className="autentication__container" >
             <Outlet />
             <AuthNavigation />
           </Box>
