@@ -1,4 +1,3 @@
-import Header from "../../Components/Header/Headers";
 import Flats from "../../Components/Flats/Flats";
 import { Outlet, useOutletContext, Navigate } from "react-router-dom";
 import { useEffect } from "react";

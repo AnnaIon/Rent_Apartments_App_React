@@ -11,7 +11,6 @@ import { KeyboardReturnOutlined } from "@mui/icons-material";
 import SortIcon from "@mui/icons-material/Sort";
 import IconButton from "@mui/material/IconButton";
 import { useAuth } from "../../context/AuthContext";
-import MenuPopupState from "../FilterBar";
 import HomeIcon from "@mui/icons-material/Home";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
