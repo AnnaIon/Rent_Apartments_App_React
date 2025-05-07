@@ -1,144 +1,158 @@
-.login_container {
-  width: 30%;
-  height: auto;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  padding: 2rem;
-  gap: 1rem;
-}
+/* =========================
+   Container Styles
+   ========================= */
 
-.buttons_container{
-   display: flex;
-   flex-direction: row;
-   align-items: center;
-   justify-content: center;
-}
-
-/* .main{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-} */
-.title {
-  font-size: 30px;
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-/* input {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 94%;
-  padding: 10px;
-  margin-bottom: 1rem;
-  background: none;
-  border: none;
-  border-bottom: 1.5px solid var(--davys-gray);
-} */
-.input:focus {
-  outline: 1px solid #646cff;
-  border: none;
-  color: #646cff;
-}
-.input:focus::placeholder {
-  color: #646cff;
-}
-
-::placeholder {
-  color: var(--cadet-gray);
-}
-.red_placeholder::placeholder {
-  color: var(--red);
-  font-weight: 600;
-}
-.red_placeholder {
-  color: var(--red);
-  border: 1.5px solid var(--red);
-}
-
-.input_error {
-  color: var(--red);
-  border: 1.5px solid var(--red);
-}
-
-.login_btn {
-  margin-top: 3rem;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: transparent;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.register_link {
-
-  padding-top: 10px;
-}
-.register_link:hover {
-  color: #646cff;
-}
-
-.error {
-  color: var(--red);
-  font-weight: 600;
-}
-
-.date_container:focus {
-  outline: none;
-  border: none;
-}
-
-.error_date:focus {
-  border: none;
-  outline: none;
-}
-.error_date,
-.date_container {
-  border: none;
-  outline: none;
-}
-
-.error_date::-webkit-datetime-edit-text,
-::-webkit-datetime-edit-month-field,
-::-webkit-datetime-edit-day-field,
-::-webkit-datetime-edit-year-field {
-  color: red;
-  font-weight: 800;
-}
-.date_container::-webkit-datetime-edit-text,
-::-webkit-datetime-edit-month-field,
-::-webkit-datetime-edit-day-field,
-::-webkit-datetime-edit-year-field {
-  color: white;
-  font-weight: 800;
-}
-.error_date::-webkit-calendar-picker-indicator {
-  filter: brightness(0) saturate(100%) invert(25%) sepia(51%) saturate(4922%)
-    hue-rotate(347deg) brightness(80%) contrast(114%);
-}
-
-
-
-
-
+   .login_container {
+    width: 30%;
+    height: auto;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1rem;
+  }
+  
+  /* Container for login/register buttons */
+  .buttons_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* =========================
+     Typography & Titles
+     ========================= */
+  
+  .title {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  /* =========================
+     Input Styles & Validation
+     ========================= */
+  
+  /* Focused input style */
+  .input:focus {
+    outline: 1px solid #646cff;
+    border: none;
+    color: #646cff;
+  }
+  
+  /* Focused placeholder color */
+  .input:focus::placeholder {
+    color: #646cff;
+  }
+  
+  /* Default placeholder color */
+  ::placeholder {
+    color: var(--cadet-gray);
+  }
+  
+  /* Error state for placeholder text */
+  .red_placeholder::placeholder {
+    color: var(--red);
+    font-weight: 600;
+  }
+  
+  /* Error styling for text input */
+  .red_placeholder,
+  .input_error {
+    color: var(--red);
+    border: 1.5px solid var(--red);
+  }
+  
+  /* =========================
+     Button Styles
+     ========================= */
+  
+  .login_btn {
+    margin-top: 3rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: transparent;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  }
+  
+  /* Hover and focus styles for buttons */
+  button:hover {
+    border-color: #646cff;
+  }
+  
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+  
+  /* =========================
+     Register Link Styles
+     ========================= */
+  
+  .register_link {
+    padding-top: 10px;
+  }
+  
+  .register_link:hover {
+    color: #646cff;
+  }
+  
+  /* =========================
+     Error Text
+     ========================= */
+  
+  .error {
+    color: var(--red);
+    font-weight: 600;
+  }
+  
+  /* =========================
+     Date Input Styling
+     ========================= */
+  
+  /* Disable default border and outline on focus */
+  .date_container:focus,
+  .error_date:focus {
+    outline: none;
+    border: none;
+  }
+  
+  .error_date,
+  .date_container {
+    border: none;
+    outline: none;
+  }
+  
+  /* Custom styling for native date input text fields */
+  .error_date::-webkit-datetime-edit-text,
+  ::-webkit-datetime-edit-month-field,
+  ::-webkit-datetime-edit-day-field,
+  ::-webkit-datetime-edit-year-field {
+    color: red;
+    font-weight: 800;
+  }
+  
+  .date_container::-webkit-datetime-edit-text,
+  ::-webkit-datetime-edit-month-field,
+  ::-webkit-datetime-edit-day-field,
+  ::-webkit-datetime-edit-year-field {
+    color: white;
+    font-weight: 800;
+  }
+  
+  /* Custom icon color for error state */
+  .error_date::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(25%) sepia(51%) saturate(4922%)
+      hue-rotate(347deg) brightness(80%) contrast(114%);
+  }
+  

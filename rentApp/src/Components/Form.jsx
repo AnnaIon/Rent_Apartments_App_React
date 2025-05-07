@@ -1,18 +1,16 @@
 import {
-  successful, 
-  failed, 
-  anyError, 
-  buildInitialStateObject, 
+  successful,
+  failed,
+  anyError,
+  buildInitialStateObject,
   createFormComponent,
-  InputsValidations, 
-  passwordMatch, 
+  InputsValidations,
+  passwordMatch,
 } from "../Utils/InputsValidations";
 
 import { useEffect, useState } from "react";
-
 import { Button } from "@mui/material";
-
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   emailAlreadyTaken,
@@ -24,9 +22,8 @@ import {
 
 import DoneIcon from "@mui/icons-material/Done";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { yellow } from "@mui/material/colors";
-import { lime } from "@mui/material/colors";
 
+// Main reusable Form component for Login/Register/Profile actions
 function Form({
   fields,
   buttonLabel,
@@ -37,166 +34,123 @@ function Form({
   isProfilePage = false,
 }) {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({});
-
   const [error, setError] = useState({});
+  const [edit, setEdit] = useState(false); // Toggle edit mode for profile
 
-  const [edit, setEdit] = useState(false);
-
+  // Initialize form data based on passed-in field values or default
   useEffect(() => {
     if (Object.keys(fieldValues).length > 0) {
       setFormData(fieldValues);
     } else {
       setFormData(buildInitialStateObject(fields));
     }
-  }, [fields, fieldValues]); 
+  }, [fields, fieldValues]);
 
+  // Handles input changes and performs field-level validation
   const handleChange = (e) => {
-    let errorsState = {}; 
-    let isDatePickerObj = e.target === undefined || e.target === null; 
-    let fieldName = ""; 
-    let fieldValue = ""; 
+    let isDatePicker = e?.target === undefined;
+    let fieldName = isDatePicker ? "birthDate" : e.target.name;
+    let fieldValue = isDatePicker ? new Date(e) : e.target.value;
 
-    if (isDatePickerObj) {
-      console.log(e); 
-      errorsState = InputsValidations("birthDate", e); 
-      fieldName = "birthDate"; 
-    } else {
+    const fieldError = InputsValidations(fieldName, fieldValue);
 
-      const { name, value } = e.target;
-      errorsState = InputsValidations(name, value); 
-      fieldName = name; 
-      fieldValue = value; 
-      console.log(name, value); 
-    }
-
-    setError({ ...error, [fieldName]: errorsState });
-
-    setFormData({
-      ...formData,
-      [fieldName]: !isDatePickerObj ? fieldValue : new Date(e), 
-    });
+    setError((prev) => ({ ...prev, [fieldName]: fieldError }));
+    setFormData((prev) => ({ ...prev, [fieldName]: fieldValue }));
   };
 
+  // Handles form submit logic for Login, Register, and Profile edit
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     if (isProfilePage) {
-      await updateUserData(user, formData); 
-      setEdit(false); 
+      await updateUserData(user, formData);
+      setEdit(false);
       return;
     }
 
-    if (buttonLabel.match(/login/i)) {
-      const response = await signIn(formData); 
-      console.log(response); 
-
-      if (response.success) {
-        navigate("/homepage");
-      }
+    if (/login/i.test(buttonLabel)) {
+      const response = await signIn(formData);
+      if (response.success) navigate("/homepage");
     } else {
-      let password = formData.password;
-      let confirmPassword = formData.confirmPassword;
+      const { email, password, confirmPassword, birthDate, firstName, lastName } = formData;
 
       if (passwordMatch(password, confirmPassword) && !anyError(error)) {
-        let email = formData["email"];
-        let dateOfBirth = formData["birthDate"];
-        let firstName = formData["firstName"];
-        let lastName = formData["lastName"];
-
         if (await emailAlreadyTaken(email)) {
-          let message = "Email already exists in the database";
-          failed(message);
+          failed("Email already exists in the database");
         } else {
-          const success = await userRegistration(
-            email,
-            password,
-            dateOfBirth,
-            firstName,
-            lastName
-          );
-          if (success) {
-            let message = "Successfully registered";
-            successful(message); 
+          const success = await userRegistration(email, password, birthDate, firstName, lastName);
+          if (success) successful("Successfully registered");
         }
       }
+      setEdit(false);
     }
-    setEdit(false); 
   };
 
-  const handleEditClick = () => {
-    setEdit(!edit);
-  };
+  const handleEditClick = () => setEdit((prev) => !prev);
 
   const handleDelete = () => {
     handleDeleteAccount()
-      .then(() => {
-        navigate("/authentication");
-      })
+      .then(() => navigate("/authentication"))
       .catch((error) => {
-        console.log("Failed to delete account:", error);
+        console.error("Failed to delete account:", error);
+        failed("Account deletion failed.");
       });
   };
 
   return (
     <form
-      onSubmit={handleSubmit} 
+      onSubmit={handleSubmit}
       style={{
-        width: "100%", 
-        padding: "1em", 
-        display: "flex", 
-        flexDirection: "column", 
-        justifyContent: "center", 
-        alignItems: "center", 
+        width: "100%",
+        padding: "1em",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      {fields.map((field) => {
-        if (isProfilePage)
-          return createFormComponent(
-            field,
-            error,
-            handleChange,
-            formData,
-            !edit
-          );
+      {fields.map((field) =>
+        createFormComponent(field, error, handleChange, formData, isProfilePage && !edit)
+      )}
 
-        return createFormComponent(field, error, handleChange, formData);
-      })}
-      {isProfilePage ? (
+      {/* DELETE button for profile mode */}
+      {isProfilePage && (
         <Button
           startIcon={<HighlightOffIcon />}
           variant="contained"
-          color="primary"
+          color="error"
           sx={{ fontWeight: "bold", mt: "2rem" }}
           onClick={handleDelete}
         >
-          DELETE ACCOUNT
+          Delete Account
         </Button>
-      ) : null}
-      {edit ? (
+      )}
+
+      {/* Toggle between Save and Edit / Login / Register */}
+      {isProfilePage && !edit ? (
         <Button
-          startIcon={<DoneIcon />}
+          startIcon={icon}
           variant="contained"
           color="primary"
-          onClick={handleSubmit}
           sx={{ fontWeight: "bold", width: "50%", mt: "2rem" }}
+          onClick={handleEditClick}
         >
-          Save
+          {buttonLabel}
         </Button>
       ) : (
         <Button
-          startIcon={icon} 
-          variant="contained" 
-          color="primary" 
-          onClick={isProfilePage ? handleEditClick : handleSubmit}
-          sx={{ fontWeight: "bold", width: "50%", mt: "2rem" }} 
+          startIcon={edit ? <DoneIcon /> : icon}
+          variant="contained"
+          color="primary"
+          sx={{ fontWeight: "bold", width: "50%", mt: "2rem" }}
+          type="submit"
         >
-          {buttonLabel}
+          {edit ? "Save" : buttonLabel}
         </Button>
       )}
     </form>
   );
 }
-}
+
 export default Form;

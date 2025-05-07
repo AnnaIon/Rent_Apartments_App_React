@@ -8,20 +8,21 @@ const Favourites = () => {
   const [flats, setFlats] = useState([]);
   const { currentUser } = useOutletContext();
 
+  // Fetch the user's favorite flats on component mount
   useEffect(() => {
-    getFavouriteFlats(currentUser).then((res) => {
-      if (res) {
-        setFlats(res);
-      }
-    });
-  }, []);
+    const fetchFavourites = async () => {
+      const res = await getFavouriteFlats(currentUser);
+      if (res) setFlats(res);
+    };
+    fetchFavourites();
+  }, [currentUser]);
 
   return (
     <>
       {flats.length > 0 ? (
         <Grid2 container spacing={4} columns={5}>
-          <Grid2 size={3}>
-            {flats.map((flat) => (
+          {flats.map((flat) => (
+            <Grid2 key={flat.id} xs={12} sm={6} md={4} lg={3}>
               <Flat
                 city={flat.city}
                 streetName={flat.streetName}
@@ -34,12 +35,14 @@ const Favourites = () => {
                 flatId={flat.id}
                 favourite={true}
                 flat={flat}
-              ></Flat>
-            ))}
-          </Grid2>
+              />
+            </Grid2>
+          ))}
         </Grid2>
       ) : (
-        ""
+        <p style={{ textAlign: "center", marginTop: "2rem" }}>
+          You don’t have any favourite flats yet.
+        </p>
       )}
     </>
   );

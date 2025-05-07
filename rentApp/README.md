@@ -1,8 +1,49 @@
-# React + Vite
+# 🏠 Rent Apartments App – React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for browsing, filtering, and managing apartment rentals. Built with React and Tailwind CSS.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- User authentication (login & register)
+- View and filter apartment listings
+- Save favorite apartments
+- Mobile responsive layout
+- Clean and simple UI
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js and npm installed
+
+### Installation
+
+- Clone this repository:
+   ```bash
+   git clone https://github.com/AnnaIon/Rent_Apartments_App_React.git
+   cd Rent_Apartments_App_React
+
+
+
+
+### 📌  **Tech Stack**  
+
+- React
+- Tailwind CSS
+- React Router
+- Context API (for global state)
+- Axios (for API requests)
+
+
+
+## 🤝 Contributing
+
+Pull requests are welcome!  
+Steps:
+- Fork this repo
+- Create a new branch: `git checkout -b feature/your-feature`
+- Commit your changes and push: `git push origin feature/your-feature`
+- Open a pull request
+
+## 📬 Contact
+
+Made by [Anna Ion](https://github.com/AnnaIon) – feel free to reach out!

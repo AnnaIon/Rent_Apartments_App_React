@@ -14,14 +14,18 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { Button } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import dayjs from "dayjs";
-import { Box } from "@mui/material";
 
-
+/**
+ * AddFlat Component
+ * Provides a form to allow authenticated users to add a new flat listing
+ * to their user document in Firebase Firestore.
+ */
 const AddFlat = () => {
+  // Flat form state
   const [flatData, setFlatData] = useState({
-    id: Date.now(),
+    id: Date.now(),           // unique ID based on timestamp
     title: "",
     city: "",
     streetName: "",
@@ -36,6 +40,7 @@ const AddFlat = () => {
 
   const navigate = useNavigate();
 
+  // Generic input change handler for both text and checkbox inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFlatData((previous) => ({
@@ -43,28 +48,37 @@ const AddFlat = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
+  // Date change handler for DatePicker (formatted as YYYY-MM-DD)
   const handleDateChange = (newDate) => {
     setFlatData((previous) => ({
       ...previous,
-      dateAvailable: newDate ? dayjs(newDate).format("YYYY-MM-DD") : "", // Format as a string
+      dateAvailable: newDate ? dayjs(newDate).format("YYYY-MM-DD") : "",
     }));
   };
+
+  // Submit handler to store the flat inside the authenticated user's Firestore document
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Firebase Auth listener to get current user
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         const fetchUserData = async () => {
           if (user) {
             const flatsCollection = doc(db, "users", user.uid);
             const flatDoc = await getDoc(flatsCollection);
+
             if (flatDoc.exists()) {
               const findFlatData = flatDoc.data();
-              const flatArr = findFlatData.flats;
-              flatArr.push(flatData);
+              const flatArr = findFlatData.flats || [];
+              flatArr.push(flatData); // Add new flat
 
+              // Update Firestore with new flats array
               await updateDoc(flatsCollection, {
                 flats: flatArr,
               });
+
+              // Redirect to homepage after submission
               navigate("/homepage");
             }
           }
@@ -72,6 +86,7 @@ const AddFlat = () => {
         fetchUserData();
       });
 
+      // Clean up the Auth listener
       return () => unsubscribe();
     } catch (error) {
       console.log("Error adding flat", error);
@@ -79,88 +94,108 @@ const AddFlat = () => {
   };
 
   return (
-    <Box sx={{backgroundColor:'white', p:'2rem',borderRadius:'10px'}}>
-      <form  onSubmit={handleSubmit}>
-        <Grid2 container spacing={3} sx={{ mt: "1rem" ,justifyContent:"center" ,alignItems:"center"}}>
+    <Box sx={{ backgroundColor: 'white', p: '2rem', borderRadius: '10px' }}>
+      <form onSubmit={handleSubmit}>
+        <Grid2
+          container
+          spacing={3}
+          sx={{
+            mt: "1rem",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* Title Field */}
           <TextField
-            id="standard-basic"
-            label="title"
-            name= "title"
+            label="Title"
+            name="title"
             variant="standard"
             value={flatData.title}
             onChange={handleChange}
           />
 
+          {/* City Field */}
           <TextField
-            id="standard-basic"
-            label="city"
-              name= "city"
+            label="City"
+            name="city"
             variant="standard"
             value={flatData.city}
             onChange={handleChange}
           />
 
+          {/* Street Name Field */}
           <TextField
-            id="standard-basic"
-              name= "streetName"
             label="Street Name"
+            name="streetName"
             variant="standard"
             value={flatData.streetName}
             onChange={handleChange}
           />
+
+          {/* Has AC Checkbox */}
           <FormGroup>
             <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label="Has AC:"
-              name= "hasAc"
+              control={<Checkbox />}
+              label="Has AC"
+              name="hasAc"
               onChange={handleChange}
               checked={flatData.hasAc}
-              sx={{color:'grey'}}
+              sx={{ color: 'grey' }}
             />
           </FormGroup>
+
+          {/* Street Number */}
           <TextField
-            id="standard-basic"
             label="Street Number"
-              name= "streetNumber"
+            name="streetNumber"
             variant="standard"
             value={flatData.streetNumber}
             onChange={handleChange}
           />
+
+          {/* Area Size */}
           <TextField
-            id="standard-basic"
             label="Area Size"
+            name="areaSize"
             variant="standard"
-            name='areaSize'
             value={flatData.areaSize}
             onChange={handleChange}
           />
+
+          {/* Date Available */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-       
-              <DatePicker
-                onChange={handleDateChange}
-                value={flatData.dateAvailable ? dayjs(flatData.dateAvailable) : null}
-              />
+            <DatePicker
+              label="Available From"
+              onChange={handleDateChange}
+              value={flatData.dateAvailable ? dayjs(flatData.dateAvailable) : null}
+            />
           </LocalizationProvider>
 
-          
+          {/* Year Built */}
           <TextField
-            id="standard-basic"
-              name="yearBuild"
             label="Year Build"
+            name="yearBuild"
             variant="standard"
             value={flatData.yearBuild}
             onChange={handleChange}
           />
+
+          {/* Rent Price */}
           <TextField
-            id="standard-basic"
-              name="rentPrice"
             label="Rent Price"
+            name="rentPrice"
             variant="standard"
             value={flatData.rentPrice}
             onChange={handleChange}
           />
 
-          <Button  type="submit"  variant="contained" color="primary" sx={{width:'20%'}}>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ width: '20%' }}
+          >
             Add
           </Button>
         </Grid2>

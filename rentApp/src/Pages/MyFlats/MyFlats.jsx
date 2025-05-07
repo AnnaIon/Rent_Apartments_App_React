@@ -5,17 +5,26 @@ import Flats from '../../Components/Flats/Flats';
 import { useState } from 'react';
 
 const MyFlats = () => {
+  // State to manage user's flats, including both original and filtered versions
   const [flats, setFlats] = useState({
-    originalFlats : {}, 
-    filteredFlats : {}
+    originalFlats: {},   // All flats owned by the user
+    filteredFlats: {}    // Flats after applying filters (if any)
   });
 
   return (
     <div className={styles.main}>
-     <AddFlat/>
-     <Flats isHomepage={false} flats={flats} setFlats={setFlats} isMyFlatsPage ={true}/>
-    </div>
-  )
-}
+      {/* Component to add a new flat */}
+      <AddFlat />
 
-export default MyFlats
+      {/* Reusable Flats component configured for "My Flats" page */}
+      <Flats 
+        isHomepage={false}           // Indicates this is not the homepage
+        flats={flats}                // Pass the flats data
+        setFlats={setFlats}          // Function to update flat state
+        isMyFlatsPage={true}         // Enables user-specific features (e.g. delete button)
+      />
+    </div>
+  );
+};
+
+export default MyFlats;

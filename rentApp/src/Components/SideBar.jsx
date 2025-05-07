@@ -1,357 +1,198 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { useState } from "react";
-import Slider from "@mui/material/Slider";
+import {
+  Box,
+  Drawer,
+  Button,
+  List,
+  Divider,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Checkbox,
+  FormControlLabel,
+  Input,
+  InputLabel,
+  TextField,
+} from "@mui/material";
+
 import MenuIcon from "@mui/icons-material/Menu";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { InputLabel, Input } from "@mui/material";
 import { orange } from "@mui/material/colors";
-import { BreakfastDiningOutlined } from "@mui/icons-material";
+import { useState } from "react";
 
+// Placeholder cities array for potential autocomplete use
 const citiesArray = [
-  {
-    label: "Bucharest",
-  },
-  {
-    label: "Roma",
-  },
-  {
-    label: "Idk",
-  },
+  { label: "Bucharest" },
+  { label: "Roma" },
+  { label: "Idk" },
 ];
+
 export default function AnchorTemporaryDrawer({ filter, setFilter, flats }) {
-  const [check, setCheck] = useState(false);
+  const [state, setState] = useState({ left: false });
 
-  const [state, setState] = React.useState({
-    left: false,
-  });
-
-  function valuetext(value) {
-    return `${value}`;
-  }
-
-  const handleChangeCheckbox = (event) => {
-    setCheck(event.target.checked);
-    console.log(check); // Retrieve checked value
-  };
-
+  // Updates filter state based on checkbox and input changes
   const handleChange = (event, newValue) => {
-    const { name,value } = event.target;
+    const { name, value } = event.target;
+
     switch (name) {
       case "AZ":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["ZA"]: false,
-        });
+        setFilter({ ...filter, AZ: newValue, ZA: false });
         break;
       case "ZA":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["AZ"]: false,
-        });
+        setFilter({ ...filter, ZA: newValue, AZ: false });
         break;
       case "minArea":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["maxArea"]: false,
-        });
+        setFilter({ ...filter, minArea: newValue, maxArea: false });
         break;
       case "maxArea":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["minArea"]: false,
-        });
+        setFilter({ ...filter, maxArea: newValue, minArea: false });
         break;
       case "minPrice":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["maxPrice"]: false,
-        });
+        setFilter({ ...filter, minPrice: newValue, maxPrice: false });
         break;
       case "maxPrice":
-        setFilter({
-          ...filter,
-          [name]: newValue,
-          ["minPrice"]: false,
-        });
+        setFilter({ ...filter, maxPrice: newValue, minPrice: false });
         break;
-    //   case "city":
-    //     setFilter({
-    //       ...filter,
-    //       [name]: value,
-    //     });
-    //     break;
       default:
-        setFilter({
-          ...filter,
-          [name]: value,
-        });
+        setFilter({ ...filter, [name]: value });
         break;
     }
-    console.log(newValue)
   };
 
+  // Opens or closes the drawer
   const toggleDrawer = (anchor, open) => (event) => {
-    console.log(anchor, open);
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
+    if (event.type === "keydown" && ["Tab", "Shift"].includes(event.key)) return;
     setState({ ...state, [anchor]: open });
   };
 
-  const handleResetFilter = () =>{
-     setFilter(
-        {
-            AZ: true,
-            ZA: false,
-            minArea: false,
-            maxArea: false,
-            minPrice: false,
-            maxPrice: false,
-            city: "",
-            minPriceRange: 0,
-            maxPriceRange: 0,
-            minAreaRange: 0,
-            maxAreaRange: 0,
-          }
-     )
-  }
+  // Resets all filter values to their initial state
+  const handleResetFilter = () => {
+    setFilter({
+      AZ: true,
+      ZA: false,
+      minArea: false,
+      maxArea: false,
+      minPrice: false,
+      maxPrice: false,
+      city: "",
+      minPriceRange: 0,
+      maxPriceRange: 0,
+      minAreaRange: 0,
+      maxAreaRange: 0,
+    });
+  };
+
+  // Drawer content layout
   const list = (anchor) => (
-    <Box
-      sx={{ width: anchor === "top" || anchor === "bottom" ? "auto" : 250 }}
-      role="presentation"
-    >
-      <List sx={{ display: "flex", flexDirection: "column" }}>
-        <ListItemText disablePadding> Sort </ListItemText>
-        <ListItemText disablePadding> City : </ListItemText>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="AZ"
-                  checked={filter["AZ"]}
-                  onChange={handleChange}
-                />
-              }
-              label="A-Z"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="ZA"
-                  checked={filter["ZA"]}
-                  onChange={handleChange}
-                />
-              }
-              label="Z-A"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItemText> Area size : </ListItemText>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="minArea"
-                  checked={filter["minArea"]}
-                  onChange={handleChange}
-                />
-              }
-              label="min"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="maxArea"
-                  checked={filter["maxArea"]}
-                  onChange={handleChange}
-                />
-              }
-              label="max"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItemText disablePadding> Price : </ListItemText>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="minPrice"
-                  checked={filter["minPrice"]}
-                  onChange={handleChange}
-                />
-              }
-              label="min"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="maxPrice"
-                  checked={filter["maxPrice"]}
-                  onChange={handleChange}
-                />
-              }
-              label="max"
-            />
-            <ListItemText />
-          </ListItemButton>
-        </ListItem>
+    <Box sx={{ width: anchor === "left" ? 300 : "auto" }} role="presentation">
+      {/* Sorting section */}
+      <List>
+        <ListItemText primary="Sort By" />
+        {["AZ", "ZA", "minArea", "maxArea", "minPrice", "maxPrice"].map((key) => (
+          <ListItem key={key} disablePadding>
+            <ListItemButton>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name={key}
+                    checked={filter[key]}
+                    onChange={handleChange}
+                  />
+                }
+                label={key.replace(/([A-Z])/g, " $1").toUpperCase()}
+              />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
 
       <Divider />
-      <List sx={{ display: "flex", flexDirection: "column" }}>
-        <ListItemText disablePadding> Filter </ListItemText>
-        <ListItemText disablePadding> City : </ListItemText>
 
+      {/* Filtering section */}
+      <List>
+        <ListItemText primary="Filter By" />
+
+        {/* City Input */}
         <ListItem disablePadding>
           <ListItemButton>
             <TextField
               name="city"
+              label="City"
+              value={filter.city}
               onChange={handleChange}
-              label="Search input"
-              slotProps={{
-                input: {
-                  type: "search"
-                },
-              }}
+              type="search"
+              fullWidth
             />
-            <ListItemText />
           </ListItemButton>
         </ListItem>
 
-        <ListItemText disablePadding> Area Range: </ListItemText>
+        {/* Area Range */}
+        <ListItemText primary="Area Range (m²)" />
         <ListItem disablePadding>
           <ListItemButton>
-            <Box
-              sx={{
-                width: 200,
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <InputLabel>min</InputLabel>
+            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <InputLabel>Min</InputLabel>
               <Input
                 name="minAreaRange"
+                type="number"
                 value={filter.minAreaRange}
                 onChange={handleChange}
-                valueLabelDisplay="auto"
-                type="number"
-                sx={{ width: "25%" }}
               />
-              <InputLabel>max</InputLabel>
+              <InputLabel>Max</InputLabel>
               <Input
                 name="maxAreaRange"
+                type="number"
                 value={filter.maxAreaRange}
                 onChange={handleChange}
-                valueLabelDisplay="auto"
-                type="number"
-                sx={{ width: "25%" }}
               />
             </Box>
-            <ListItemText />
           </ListItemButton>
         </ListItem>
-        <ListItemText disablePadding> Price Range: </ListItemText>
+
+        {/* Price Range */}
+        <ListItemText primary="Price Range (€)" />
         <ListItem disablePadding>
           <ListItemButton>
-            <Box
-              sx={{
-                width: 200,
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <InputLabel>min</InputLabel>
+            <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <InputLabel>Min</InputLabel>
               <Input
                 name="minPriceRange"
+                type="number"
                 value={filter.minPriceRange}
                 onChange={handleChange}
-                valueLabelDisplay="auto"
-                type="number"
-                sx={{ width: "25%" }}
               />
-              <InputLabel>max</InputLabel>
+              <InputLabel>Max</InputLabel>
               <Input
                 name="maxPriceRange"
+                type="number"
                 value={filter.maxPriceRange}
                 onChange={handleChange}
-                valueLabelDisplay="auto"
-                type="number"
-                sx={{ width: "25%" }}
               />
             </Box>
-
-            <ListItemText />
           </ListItemButton>
         </ListItem>
 
-        <Button onClick={handleResetFilter}>Reset filters</Button>
+        {/* Reset Button */}
+        <ListItem>
+          <Button variant="outlined" color="warning" onClick={handleResetFilter}>
+            Reset Filters
+          </Button>
+        </ListItem>
       </List>
     </Box>
   );
 
   return (
-    <div>
-      <React.Fragment>
-        <Button onClick={toggleDrawer("left", true)} sx={{ color: orange[300] }}>
-          <MenuIcon sx={{ color: orange[300] }}/>Filter
-        </Button>
-        <Drawer
-          left="left"
-          open={state["left"]}
-          onClose={toggleDrawer("left", false)}
-        >
-          {list("left")}
-        </Drawer>
-      </React.Fragment>
-    </div>
+    <>
+      <Button onClick={toggleDrawer("left", true)} sx={{ color: orange[300] }}>
+        <MenuIcon /> Filter
+      </Button>
+      <Drawer
+        anchor="left"
+        open={state["left"]}
+        onClose={toggleDrawer("left", false)}
+      >
+        {list("left")}
+      </Drawer>
+    </>
   );
 }

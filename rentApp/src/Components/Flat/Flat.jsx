@@ -8,17 +8,22 @@ import CardActions from "@mui/material/CardActions";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Typography from "@mui/material/Typography";
-import { Container, Box } from "@mui/material";
-import { useOutletContext } from "react-router-dom";
-import MessageIcon from "@mui/icons-material/Message";
-import { TextField } from "@mui/material";
+import { Container, Box, TextField, Button } from "@mui/material";
 import { red } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
-import { Button } from "@mui/material";
-import { sendMessage ,updateFlatData,favouriteFlat} from "../../../firebase";
+import MessageIcon from "@mui/icons-material/Message";
 import DoneIcon from "@mui/icons-material/Done";
+import { useOutletContext } from "react-router-dom";
+import {
+  sendMessage,
+  updateFlatData,
+  favouriteFlat
+} from "../../../firebase";
 
-
+/**
+ * Flat Component - Displays individual flat card with editable or read-only views,
+ * favorite toggle, message sending, and flip view for extra info or edit form.
+ */
 export default function Flat({
   city,
   streetName,
@@ -36,64 +41,75 @@ export default function Flat({
   flat,
   isMyFlatsPage
 }) {
+  // Card flipping state (front/back)
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // Favorite state based on initial prop
   const [isFavourite, setIsFavourite] = useState(favourite);
-  const { currentUser } = useOutletContext();
+
+  // Message sending state
   const [message, setMessage] = useState(false);
-  const [send, setSend] = useState("");
   const [messageText, setMessageText] = useState("");
-  const [edit, setEdit] = useState(false);
+
+  // Editable flat state
   const [flatData, setFlatData] = useState(flat);
 
+  const { currentUser } = useOutletContext();
+
+  // Flip card view
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
+
+  // Toggle favorite icon and trigger DB update
   const handleFavourite = () => {
-    setIsFavourite(!isFavourite);
+    setIsFavourite((prev) => !prev);
   };
 
+  // Update favorite status in Firebase whenever toggled
   useEffect(() => {
     const update = async () => {
-      console.log(flat);
       await favouriteFlat(currentUser, flat, isFavourite);
     };
     update();
   }, [isFavourite]);
 
+  // Toggle message field
   const handleMessage = () => {
     setMessage(!message);
   };
 
+  // Send message to flat owner
   const handleSendMessage = () => {
-    console.log(flatId);
-    console.log(messageText);
-
-    sendMessage(flatId, messageText);
+    if (messageText.trim()) {
+      sendMessage(flatId, messageText);
+      setMessageText("");
+    }
   };
+
+  // Handle text change for message
   const handleChangeMessage = (e) => {
-    const { value } = e.target;
-    setMessageText(value);
+    setMessageText(e.target.value);
   };
 
-    const handleChange = (e) =>{
-      const {name,value} = e.target;
-      flatData[name] = value;
-      setFlatData({...flatData,[name] : value})
-    }
+  // Handle text changes for flat details (editing)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFlatData({ ...flatData, [name]: value });
+  };
 
-    const handleSubmit = async (e) => {
-    e.preventDefault(); 
+  // Submit edited flat data to Firebase
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (isMyFlatsPage) {
-      await updateFlatData(currentUser, flatData); 
-      return;
+      await updateFlatData(currentUser, flatData);
     }
-
-
   };
 
   return (
     <>
       <ReactCardFlip isFlipped={isFlipped} flipDirection="vertical">
+        {/* --- Front Side of Card --- */}
         <Card>
           <Typography
             gutterBottom
@@ -108,280 +124,77 @@ export default function Flat({
             </IconButton>
           </CardActions>
         </Card>
+
+        {/* --- Back Side of Card --- */}
         <Card sx={{ width: 260, pt: "1rem" }}>
           <Container sx={{ width: 250 }}>
+            {/* If on homepage, show read-only flat details */}
             {isHomepage ? (
               <>
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  City:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {city}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Str. Name:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {streetName}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Str. No.:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {streetNumber}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Area Size:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {areaSize}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Has AC:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {hasAC ? 'Yes' : 'No '}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Year Build:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {yearBuild}
-                  </Box>
-                </Typography>
-
-                <Typography
-                  gutterBottom
-                  sx={{ color: "text.secondary", fontSize: 14 }}
-                >
-                  Rent Price:
-                  <Box sx={{ fontWeight: "600", display: "inline" }}>
-                    {rentPrice}
-                  </Box>
-                </Typography>
+                {[
+                  ["City", city],
+                  ["Str. Name", streetName],
+                  ["Str. No.", streetNumber],
+                  ["Area Size", areaSize],
+                  ["Has AC", hasAC ? "Yes" : "No"],
+                  ["Year Build", yearBuild],
+                  ["Rent Price", rentPrice],
+                ].map(([label, value]) => (
+                  <Typography
+                    key={label}
+                    gutterBottom
+                    sx={{ color: "text.secondary", fontSize: 14 }}
+                  >
+                    {label}: <Box sx={{ fontWeight: "600", display: "inline" }}>{value}</Box>
+                  </Typography>
+                ))}
               </>
             ) : (
+              // If not on homepage, show editable fields
               <>
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    City :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="city"
-                    variant="standard"
-                    value={flatData.city}
+                {[
+                  ["city", "City"],
+                  ["streetName", "Str. Name"],
+                  ["streetNumber", "Str. No."],
+                  ["areaSize", "Area Size"],
+                  ["hasAC", "Has AC"],
+                  ["yearBuild", "Year Build"],
+                  ["rentPrice", "Rent Price"],
+                ].map(([name, label]) => (
+                  <Box
+                    key={name}
                     sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
+                      fontWeight: "600",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignContent: "center",
                     }}
-                    onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
                   >
-                    Str. Name :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="streetName"
-                    variant="standard"
-                    value={flatData.streetName}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                    onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    Str. No. :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="streetNumber"
-                    variant="standard"
-                    value={flatData.streetNumber}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                    onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    Area Size :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="areaSize"
-                    variant="standard"
-                    value={flatData.areaSize}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                    onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    Has AC:
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="hasAC"
-                    variant="standard"
-                    value={flatData.hasAC ? "Yes" : "No"}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                     onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    Year Build :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="yearBuild"
-                    variant="standard"
-                    value={flatData.yearBuild}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                    onChange={handleChange}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    fontWeight: "600",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignContent: "center",
-                  }}
-                >
-                  <Typography
-                    gutterBottom
-                    sx={{ color: "text.secondary", fontSize: 14 }}
-                  >
-                    Rent Price :
-                  </Typography>
-                  <TextField
-                    id="standard-basic"
-                    name="rentPrice"
-                    variant="standard"
-                    value={flatData.rentPrice}
-                    sx={{
-                      width: "40%",
-                      justifySelf: "center",
-                      alignSelf: "center",
-                    }}
-                    onChange={handleChange}
-                  />
-                </Box>
+                    <Typography
+                      gutterBottom
+                      sx={{ color: "text.secondary", fontSize: 14 }}
+                    >
+                      {label}:
+                    </Typography>
+                    <TextField
+                      id="standard-basic"
+                      name={name}
+                      variant="standard"
+                      value={flatData[name]}
+                      sx={{
+                        width: "40%",
+                        justifySelf: "center",
+                        alignSelf: "center",
+                      }}
+                      onChange={handleChange}
+                    />
+                  </Box>
+                ))}
               </>
             )}
-            {!isHomepage ? (
+
+            {/* Save button for editing (only if not on homepage) */}
+            {!isHomepage && (
               <Button
                 startIcon={<DoneIcon />}
                 variant="contained"
@@ -391,13 +204,16 @@ export default function Flat({
               >
                 Save
               </Button>
-            ) : null}
-            {message ? (
+            )}
+
+            {/* Message box for sending inquiries */}
+            {message && (
               <TextField
                 key="messageId"
                 id="messageId"
                 name="message"
                 variant="outlined"
+                value={messageText}
                 onChange={handleChangeMessage}
                 InputProps={{
                   endAdornment: (
@@ -411,13 +227,15 @@ export default function Flat({
                   ),
                 }}
               />
-            ) : null}
+            )}
           </Container>
 
+          {/* Action buttons: favorite, delete, message, flip */}
           <CardActions disableSpacing sx={{ justifySelf: "center" }}>
             <IconButton aria-label="favourite" onClick={handleFavourite}>
               {isFavourite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </IconButton>
+
             <IconButton
               aria-label="delete"
               onClick={() => handleDeleteFlat(flatId)}
@@ -425,12 +243,9 @@ export default function Flat({
               <DeleteIcon />
             </IconButton>
 
-
-            {isCurrentOwner ? (
-              " "
-            ) : (
-              <IconButton aria-label="message">
-                <MessageIcon onClick={handleMessage} />
+            {!isCurrentOwner && (
+              <IconButton aria-label="message" onClick={handleMessage}>
+                <MessageIcon />
               </IconButton>
             )}
 
